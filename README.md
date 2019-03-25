@@ -55,7 +55,7 @@ Install Redis
 go to /var/www and from there
 cd /var/www/
 
-git clone https://github.com/iFixtechLLC/mRSS
+git clone https://github.com/iFixtechLLC/mRMS
 
 nano /var/www/mRSS/config/database.yml
 
