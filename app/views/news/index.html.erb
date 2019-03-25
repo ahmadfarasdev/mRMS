@@ -1,0 +1,26 @@
+<div class="module-title">
+  <h2 class='module-title-text'>NEWS</h2>
+</div>
+
+
+<section id="widget-grid" class="news_section">
+  <div class="row" style="margin-bottom: 10px">
+    <div class="col-md-12 ">
+      <div class="pull-right">
+        <% if can?(:create_news, :manage_roles, :manage_news) %>
+        <%= show_button(new_news_path, 'New News', 'plus', 'primary') %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+      <% @news.each do |news| %>
+          <%= render partial: 'news', locals: {news: news} %>
+      <% end %>
+    </article>
+  </div>
+</section>
+
+<%= will_paginate @news, renderer: BootstrapPagination::Rails %>

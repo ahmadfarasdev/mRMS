@@ -1,0 +1,25 @@
+
+<%= render partial: 'action_menu' %>
+<article class="news-article">
+  <header>
+    <h3><%= avatar(@news.user) %>
+      <%= link_to h(@news.title), news_path(@news) %>
+    </h3>
+    <p class="author"><%= authoring @news.created_at, @news.user %></p>
+  </header>
+  <div class="wiki">
+    <%= @news.summary.html_safe %>
+  </div>
+ <div class="wiki">
+    <%= @news.description.html_safe %>
+  </div>
+
+  <p>
+    <strong><%= t('attachments') %>:</strong>
+    <% @news.post_attachments.each do |attachment| %>
+        <%= render 'attachments/attachment_show_only', :attachment => attachment %>
+    <% end %>
+  </p>
+</article>
+
+

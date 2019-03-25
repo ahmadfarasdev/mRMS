@@ -1,0 +1,124 @@
+<div class="module-title">
+  <h2 class='module-title-text'>ENUMERATIONS</h2>
+</div>
+
+<div class="row">
+  <%= form_tag  upload_enumerations_path, method: :post,  class: 'form_submit form-horizontal',  :multipart => true  do %>
+      <div class="col-xs-12 col-sm-4">
+        <%= file_field_tag :file, multiple: false, require: true %>
+        <br />
+      </div>
+      <div class="col-xs-10 col-sm-6">
+        <% options = Enumeration.get_subclasses.sort{|a,b| a.to_s <=> b.to_s }.map{|e| [e.to_s.gsub(/(?<=[a-z])(?=[A-Z])/, ' '), e.to_s]} %>
+        <%= select_tag :type, options_for_select(options)  %>
+      </div>
+      <div class="col-xs-2">
+        <%= submit_tag :import, class: 'btn btn-primary', id: 'import_spreadsheet_submit' %>
+      </div>
+  <% end %>
+</div>
+<br />
+
+<section id="widget-grid" class="show_tab" style="margin-top: 10px">
+  <div class="row">
+    <%  tabs = Enumeration.get_subclasses.sort{|a,b| t(a::OptionName) <=> t(b::OptionName) }.inject( Hash.new { |h, k| h[k] = Array.new }){ |hash, v|
+      c = t(v::OptionName)[0].to_s.capitalize
+      hash[c] << v
+      hash
+    } %>
+    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+      <div class="ui-tabs ui-widget ui-widget-content ui-corner-all" id="tabs">
+        <% Enumeration.get_subclasses.sort{|a,b| t(a::OptionName) <=> t(b::OptionName) }.each do |klass| %>
+            <h3><%= t klass::OptionName %></h3>
+            <div class="row">
+              <div class="col-md-12">
+                <p><%= link_to I18n.t("enumeration_new_label"), new_enumeration_path(:type => klass.name), class: 'btn btn-primary'  %></p>
+                <% enumerations = klass.where(nil) %>
+                <% if enumerations.any? %>
+                    <%= render partial: 'enum_table',
+                               layout: 'shared/smart_widget_wrapper',
+                               locals: {
+                                   klass: klass,
+                                   enumerations: enumerations,
+                                   wid_id: klass::OptionName,
+                                   wid_title: t( klass::OptionName)
+                               } %>
+                <% end %>
+              </div>
+            </div>
+
+        <% end %>
+
+      </div>
+    </article>
+  </div>
+</section>
+<style>
+  .ui-widget-content a {
+    color: #214e75;
+  }
+  a.btn{
+    color: white
+  }
+</style>
+<script>
+    $(document).ready(function(){
+        $('#import_spreadsheet_submit').on('click',function(e){
+            e.preventDefault();
+            if($('#file').val()=="")
+                alert("Please select a file");
+            else
+            {
+                file_name = $('#file').val();
+                if(/(\.|\/)(xls|csv|xlsx)$/i.test(file_name))
+                    $('.form_submit').submit();
+                else
+                    alert("File not recognized");
+            }
+        })
+
+
+        $.fn.positionedItems = function(sortableOptions, options){
+            var settings = $.extend({
+                firstPosition: 1
+            }, options );
+
+            return this.sortable($.extend({
+                handle: ".sort-handle",
+                helper: function(event, ui){
+                    ui.children('td').each(function(){
+                        $(this).width($(this).width());
+                    });
+                    return ui;
+                },
+                update: function(event, ui) {
+                    var sortable = $(this);
+                    var handle = ui.item.find(".sort-handle").addClass("ajax-loading");
+                    var url = handle.data("reorder-url");
+                    var param = handle.data("reorder-param");
+                    var data = {};
+                    data[param] = {position: ui.item.index() + settings['firstPosition']};
+                    $.ajax({
+                        url: url,
+                        type: 'put',
+                        dataType: 'script',
+                        data: data,
+                        success: function(data){
+                            sortable.children(":even").removeClass("even").addClass("odd");
+                            sortable.children(":odd").removeClass("odd").addClass("even");
+                        },
+                        error: function(jqXHR, textStatus, errorThrown){
+                            alert(jqXHR.status);
+                            sortable.sortable("cancel");
+                        },
+                        complete: function(jqXHR, textStatus, errorThrown){
+                            handle.removeClass("ajax-loading");
+                        }
+                    });
+                },
+            }, sortableOptions));
+        }
+
+        $("table.enumerations tbody").positionedItems();
+    })
+</script>

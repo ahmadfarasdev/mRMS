@@ -1,0 +1,95 @@
+<fieldset>
+  <legend></legend>
+  <div class="col-sm-4 col-md-3 col-lg-3">
+
+    <div class="row">
+      <div id="files" class="files col-xs-12" >
+        <%= render partial: 'uploader/display_image', locals: {user: core_demographic.user} %>
+      </div>
+      <div  class="files col-xs-12 col-sm-12 col-md-10 col-lg-8 margin-top-10"  align="center">
+        <%= render partial: 'uploader/upload' %>
+      </div>
+
+    </div>
+  </div>
+  <div class="col-sm-8 col-md-9 col-lg-9">
+    <%= form_for(user, url: user_core_demographic_path(user, core_demographic), html: { method: :patch, class: 'form-horizontal', id: 'core-demo-form' }) do |form| %>
+        <% if user.errors.any? %>
+            <div id="error_explanation">
+              <h2><%= pluralize(user.errors.count, "error") %> prohibited this core_demographic from being saved:</h2>
+
+              <ul>
+                <% user.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+        <% end %>
+
+
+        <div class="form-group">
+          <label class="col-md-2 control-label">Email</label>
+          <div class="col-md-8">
+            <%= form.email_field :email, placeholder: 'Email' , class: 'form-control' %>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-md-2 control-label">Status</label>
+          <div class="col-md-8">
+            <%= form.select :state, options_for_select([['Active', true],['Inactive', false]], selected: user.state), {}, {class: 'form-control'} %>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-md-2 control-label">Time Zone</label>
+          <div class="col-md-8">
+            <%= form.time_zone_select :time_zone, ActiveSupport::TimeZone.us_zones, {},{class: 'form-control'} %>
+          </div>
+        </div>
+
+        <%=  form.fields_for :core_demographic do |f| %>
+            <%= f.hidden_field :user_id %>
+            <%= f.hidden_field :id %>
+
+
+            <div class="form-group">
+              <%= f.label t('profile.first_name'), class: 'col-md-2 control-label' %>
+              <div class="col-md-8">
+                <%= f.text_field :first_name, placeholder: 'First name', class: 'form-control' %>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <%= f.label t('profile.middle_name'), class: 'col-md-2 control-label' %>
+              <div class="col-md-8">
+                <%= f.text_field :middle_name, placeholder: 'Middle name', class: 'form-control' %>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <%= f.label t('profile.last_name'), class: 'col-md-2 control-label' %>
+              <div class="col-md-8">
+                <%= f.text_field :last_name, placeholder: 'Last name', class: 'form-control' %>
+              </div>
+            </div>
+
+
+               <div class="form-group">
+              <%= f.label t('organization'), class: 'col-md-2 control-label' %>
+              <div class="col-md-8">
+                <%= f.select(:organization_id, options_for_select(OrganizationEnum.active.pluck(:name, :id), selected: f.object.organization_id ), class: 'form-control') %>
+              </div>
+            </div>
+
+
+            <div class="form-group" >
+              <div class="col-md-11" >
+                <%= f.submit t(:button_save), class: 'btn btn-success pull-right' %>
+              </div>
+            </div>
+
+        <% end %>
+    <% end %>
+  </div>
+</fieldset>

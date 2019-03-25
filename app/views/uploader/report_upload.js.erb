@@ -1,0 +1,6 @@
+<% if @report_document.errors.any? %>
+  $('#errors').html('<%= j @report_document.errors.full_messages.join(', ') %>');
+<% else %>
+ $('#errors').html('')
+  location.reload();
+<% end %>

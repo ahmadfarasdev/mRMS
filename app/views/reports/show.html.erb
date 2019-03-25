@@ -1,0 +1,32 @@
+<%= render partial: 'action_menu' %>
+<div class="row">
+  <div class="col-md-12">
+    <%= render partial: 'show'%>
+    <%  if @report.document_url %>
+        <%= render partial: 'modal' %>
+        <% if params[:query_id] or params[:new_query] %>
+            <%= render partial: 'pivot_table' %>
+        <% else %>
+            <section id="widget-grid" class="show_customer_account">
+              <div class="row">
+                <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                  <%= render partial: 'reports',
+                             layout: 'shared/smart_widget_wrapper',
+                             locals: {
+                                 wid_id: 'reports',
+                                 wid_title: 'Reports'
+                             } %>
+                </article>
+              </div>
+            </section>
+        <% end %>
+    <% end %>
+  </div>
+</div>
+<style>
+  @media print
+  {
+    g:first-child{fill-opacity: 0;}
+    .noprint {display:none;}
+  }
+</style>

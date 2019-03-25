@@ -1,0 +1,16 @@
+<div class="row" style="margin-bottom: 10px">
+  <div class="col-md-12 ">
+    <div class="pull-right">
+      <% if @news.user_id == User.current.id or  @news.can?(:manage_roles) %>
+          <%= delete_button(news_path(@news)) %>
+      <% end %>
+      <% if @news.user_id == User.current.id or  @news.can?(:manage_roles) %>
+          <%= edit_button(edit_news_path(@news)) %>
+      <% end %>
+      <%= show_button(news_index_path, 'Back', 'arrow-left', 'warning') %>
+      <%#= show_button( params.permit(:from, :to, :status_type).merge(format: 'pdf'), ' Print', 'print', 'primary') %>
+
+
+    </div>
+  </div>
+</div>
